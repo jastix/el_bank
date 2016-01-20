@@ -24,6 +24,17 @@ defmodule Bank do
     |> add_amounts
   end
 
+  def expense_by_month do
+    read_csv
+    |> Stream.filter(fn(x) -> is_expense?(x) end)
+    |> Enum.reduce(%{}, fn(record, acc) -> update_month(record, acc) end)
+  end
+
+  defp update_month(record, acc) do
+    month = String.slice(record["Datum"], 4..5)
+    Map.update acc, String.to_atom(month), 0, &(&1 + get_amount(record))
+  end
+
   defp is_AH?(record) do
     Regex.match?(~r/albert(\s*)heijn(.*)/, String.downcase record["Naam / Omschrijving"])
   end
@@ -37,5 +48,9 @@ defmodule Bank do
     |> Stream.map(fn(x) -> x["Bedrag (EUR)"] end)
     |> Stream.map(fn(x) -> String.to_float(x) end)
     |> Enum.reduce(fn(x, acc) -> x + acc end)
+  end
+
+  defp get_amount(record) do
+    String.to_float(record["Bedrag (EUR)"])
   end
 end
