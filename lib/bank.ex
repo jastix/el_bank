@@ -30,9 +30,18 @@ defmodule Bank do
     |> Enum.reduce(%{}, fn(record, acc) -> update_month(record, acc) end)
   end
 
+  def income_by_month do
+    read_csv
+    |> Stream.filter(fn(x) -> is_income?(x) end)
+    |> Enum.reduce(%{}, fn(record, acc) -> update_month(record, acc) end)
+  end
+
   defp update_month(record, acc) do
     month = String.slice(record["Datum"], 4..5)
-    Map.update acc, String.to_atom(month), 0, &(&1 + get_amount(record))
+    Map.update acc,
+        String.to_atom(month),
+        get_amount(record),
+        &(&1 + get_amount(record))
   end
 
   defp is_AH?(record) do
