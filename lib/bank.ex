@@ -2,7 +2,7 @@ defmodule Bank do
   def read_csv do
     File.stream!("lib/transactions.csv")
     |> CSV.decode(headers: true)
-    |> Stream.filter(fn(x) -> x["Mededelingen"] != "" end)
+    |> Stream.filter(fn(x) -> !same_account_transfer?(x) end)
   end
 
   def income do
@@ -62,5 +62,9 @@ defmodule Bank do
 
   defp get_amount(record) do
     String.to_float(record["Bedrag (EUR)"])
+  end
+
+  defp same_account_transfer?(record) do
+    Regex.match?(~r/(van|naar) toprekening/, String.downcase record["Naam / Omschrijving"])
   end
 end
