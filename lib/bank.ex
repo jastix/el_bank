@@ -17,9 +17,9 @@ defmodule Bank do
     |> add_amounts
   end
 
-  def ah do
+  def supermarkets do
     read_csv
-    |> Stream.filter(fn(x) -> is_AH?(x) end)
+    |> Stream.filter(fn(x) -> is_supermarket?(x) end)
     |> Stream.filter(fn(x) -> is_expense?(x) end)
     |> add_amounts
   end
@@ -44,8 +44,9 @@ defmodule Bank do
         &(&1 + get_amount(record))
   end
 
-  defp is_AH?(record) do
-    Regex.match?(~r/albert(\s*)heijn(.*)/, String.downcase record["Naam / Omschrijving"])
+  defp is_supermarket?(record) do
+    supermarkets = ~r/ (albert(\s*)heijn(.*)) | ((.*)lidl(.*)) | (plus(.*)) | ((.*)hoogvliet(.*))/
+    Regex.match?(supermarkets, String.downcase record["Naam / Omschrijving"])
   end
 
   defp is_expense?(record), do: record["Af Bij"] == "Af"
