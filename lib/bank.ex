@@ -24,14 +24,48 @@ defmodule Bank do
     |> add_amounts
   end
 
-  def expense_by_month do
+  def annual_expense_by_month do
     read_csv
+    |> group_by_year
+    |> calculate_monthly_expense_by_year
+  end
+
+  def annual_income_by_month do
+    read_csv
+    |> group_by_year
+    |> calculate_monthly_income_by_year
+  end
+
+  defp group_by_year(records) do
+    records
+    |> Stream.map(fn(x) ->
+         Map.put(x, :year, (String.slice(x["Datum"], 0..3)))
+       end)
+    |> Enum.group_by(&(&1[:year]))
+  end
+
+  defp calculate_monthly_expense_by_year(records) do
+    records
+    |> Enum.reduce(%{},
+      fn({k, v}, acc) -> Map.update(acc, k, expense_by_month(v),
+                                    expense_by_month(v)) end)
+  end
+
+  defp calculate_monthly_income_by_year(records) do
+    records
+    |> Enum.reduce(%{},
+      fn({k, v}, acc) -> Map.update(acc, k, income_by_month(v),
+                                    income_by_month(v)) end)
+  end
+
+  defp expense_by_month(records) do
+    records
     |> Stream.filter(fn(x) -> is_expense?(x) end)
     |> Enum.reduce(%{}, fn(record, acc) -> update_month(record, acc) end)
   end
 
-  def income_by_month do
-    read_csv
+  defp income_by_month(records) do
+    records
     |> Stream.filter(fn(x) -> is_income?(x) end)
     |> Enum.reduce(%{}, fn(record, acc) -> update_month(record, acc) end)
   end
