@@ -79,7 +79,7 @@ defmodule Bank do
   end
 
   defp is_supermarket?(record) do
-    supermarkets = ~r/ (albert(\s*)heijn(.*)) | ((.*)lidl(.*)) | (plus(.*)) | ((.*)hoogvliet(.*))/
+    supermarkets = ~r/(albert(\s*)heijn(.*))|((.*)lidl(.*))|(plus(.*))|((.*)hoogvliet(.*))|(jumbo(.*))/
     Regex.match?(supermarkets, String.downcase record["Naam / Omschrijving"])
   end
 
