@@ -1,39 +1,55 @@
 defmodule Bank do
-  def read_csv do
-    File.stream!("lib/transactions.csv")
+  require IEx
+  def main(args) do
+    args |> parse_args |> process
+  end
+
+  defp parse_args(args) do
+    {options, _, _} = OptionParser.parse(args,
+      switches: [file: :string, type: :string])
+    options
+  end
+
+  def process([]), do: IO.puts "No arguments given"
+  def process(options) do
+    case String.downcase(options[:type]) do
+      "income" ->
+        annual_income_by_month(options[:file])
+      "expense" ->
+        annual_expense_by_month(options[:file])
+      "supermarket" ->
+        supermarkets(options[:file])
+      _ ->
+        IO.puts "Unknown type #{options[:type]}"
+    end
+  end
+
+  def read_csv(file) do
+    File.stream!(file)
     |> CSV.decode(headers: true)
     |> Stream.filter(fn(x) -> !same_account_transfer?(x) end)
   end
 
-  def income do
-    read_csv
-    |> Stream.filter(fn(x) -> is_income?(x) end)
-    |> add_amounts
-  end
-
-  def expenditure do
-    read_csv
-    |> Stream.filter(fn(x) -> is_expense?(x) end)
-    |> add_amounts
-  end
-
-  def supermarkets do
-    read_csv
+  def supermarkets(file) do
+    read_csv(file)
     |> Stream.filter(fn(x) -> is_supermarket?(x) end)
     |> Stream.filter(fn(x) -> is_expense?(x) end)
     |> add_amounts
+    |> IO.puts
   end
 
-  def annual_expense_by_month do
-    read_csv
+  def annual_expense_by_month(file) do
+    read_csv(file)
     |> group_by_year
     |> calculate_monthly_expense_by_year
+    |> IO.inspect
   end
 
-  def annual_income_by_month do
-    read_csv
+  def annual_income_by_month(file) do
+    read_csv(file)
     |> group_by_year
     |> calculate_monthly_income_by_year
+    |> IO.inspect
   end
 
   defp group_by_year(records) do
