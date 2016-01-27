@@ -42,6 +42,7 @@ defmodule Bank do
     read_csv(file)
     |> group_by_year
     |> calculate_monthly_expense_by_year
+    |> calculate_totals
     |> IO.inspect
   end
 
@@ -49,7 +50,13 @@ defmodule Bank do
     read_csv(file)
     |> group_by_year
     |> calculate_monthly_income_by_year
+    |> calculate_totals
     |> IO.inspect
+  end
+
+  defp calculate_totals(records) do
+    Enum.reduce(records, %{}, fn({k, v}, acc) ->
+      Map.put(acc, k, Map.put(v, :total, Enum.sum(Map.values(v)))) end)
   end
 
   defp group_by_year(records) do
