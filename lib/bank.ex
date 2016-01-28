@@ -19,6 +19,12 @@ defmodule Bank do
         annual_expense_by_month(options[:file])
       "supermarket" ->
         supermarkets(options[:file])
+      "drugstore" ->
+        drugstores(options[:file])
+      "transport" ->
+        transport(options[:file])
+      "household" ->
+        household(options[:file])
       _ ->
         IO.puts "Unknown type #{options[:type]}"
     end
@@ -33,6 +39,30 @@ defmodule Bank do
   def supermarkets(file) do
     read_csv(file)
     |> Stream.filter(fn(x) -> is_supermarket?(x) end)
+    |> Stream.filter(fn(x) -> is_expense?(x) end)
+    |> add_amounts
+    |> IO.puts
+  end
+
+  def drugstores(file) do
+    read_csv(file)
+    |> Stream.filter(fn(x) -> is_drugstore?(x) end)
+    |> Stream.filter(fn(x) -> is_expense?(x) end)
+    |> add_amounts
+    |> IO.puts
+  end
+
+  def transport(file) do
+    read_csv(file)
+    |> Stream.filter(fn(x) -> is_transportation?(x) end)
+    |> Stream.filter(fn(x) -> is_expense?(x) end)
+    |> add_amounts
+    |> IO.puts
+  end
+
+  def household(file) do
+    read_csv(file)
+    |> Stream.filter(fn(x) -> is_household?(x) end)
     |> Stream.filter(fn(x) -> is_expense?(x) end)
     |> add_amounts
     |> IO.puts
@@ -104,6 +134,20 @@ defmodule Bank do
   defp is_supermarket?(record) do
     supermarkets = ~r/(albert(\s*)heijn(.*))|((.*)lidl(.*))|(plus(.*))|((.*)hoogvliet(.*))|(jumbo(.*))/
     Regex.match?(supermarkets, String.downcase record["Naam / Omschrijving"])
+  end
+
+  defp is_drugstore?(record) do
+    drugstores = ~r/(kruidvat(.*))|(etos(.*))|(trekpleister(.*))/
+    Regex.match?(drugstores, String.downcase record["Naam / Omschrijving"])
+  end
+
+  defp is_transportation?(record) do
+    Regex.match?(~r/(ns-(.*))|(ns (.*))/, String.downcase record["Naam / Omschrijving"])
+  end
+
+  defp is_household?(record) do
+    household = ~r/(blokker(.*))|(ikea(.*))|(xenos(.*))|(hema(.*))|(kwantum(.*))/
+    Regex.match?(household, String.downcase record["Naam / Omschrijving"])
   end
 
   defp is_expense?(record), do: record["Af Bij"] == "Af"
