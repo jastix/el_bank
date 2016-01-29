@@ -1,0 +1,8 @@
+"Datum","Naam / Omschrijving","Rekening","Tegenrekening","Code","Af Bij","Bedrag (EUR)","MutatieSoort","Mededelingen"
+"20151231","VAN Toprekening","NL44INGB0123456789","","GT","Bij","20,00","Internetbankieren",""
+"20151231","ALBERT HEIJN 1628 AMERSFOORT NLD","NL44INGB0123456789","","BA","Af","22,00","Betaalautomaat","Pasvolgnr:002 30-12-2015 15:11"
+"20151228","262 Lidl Amersfoort AMERSFOORT","NL44INGB0123456789","","BA","Af","33,00","Betaalautomaat","Pasvolgnr:002 24-12-2015 11:05"
+"20151228","Ikea Amersfoort AMERSFOORT NLD","NL44INGB0123456789","","BA","Af","46,40","Betaalautomaat","Pasvolgnr:002 24-12-2015 14:24"
+"20151222","NS-Amersfoort 105 AMERSFOORT NLD","NL44INGB0123456789","","BA","Af","50,00","Betaalautomaat","Pasvolgnr:002 21-12-2015 18:20"
+"20151207","SALARIS","NL44INGB0123456780","NL44INGB0123456789","OV","Bij","2500,01","Overschrijving","salaris"
+"20151116","Kruidvat 1163 AMERSFOORT NLD","NL44INGB0123456789","","BA","Af","11,99","Betaalautomaat","Pasvolgnr:002 14-11-2015 12:24"
