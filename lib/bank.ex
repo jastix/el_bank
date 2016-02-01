@@ -92,7 +92,9 @@ defmodule Bank do
 
   def income_expense_savings(record) do
     income  = income_by_month(record)
+    income  = Map.put(income, :total, Enum.sum(Map.values(income)))
     expense = expense_by_month(record)
+    expense = Map.put(expense, :total, Enum.sum(Map.values(expense)))
     savings = Enum.reduce(income, %{}, fn({k, v}, acc) ->
       Map.put(acc, k, income[k] - expense[k]) end)
     %{income: income, expense: expense, savings: savings}
