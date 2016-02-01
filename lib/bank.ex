@@ -25,6 +25,8 @@ defmodule Bank do
         transport(options[:file])
       "household" ->
         household(options[:file])
+      "savings" ->
+        savings(options[:file])
       _ ->
         IO.puts "Unknown type #{options[:type]}"
     end
@@ -74,6 +76,26 @@ defmodule Bank do
     |> calculate_monthly_expense_by_year
     |> calculate_totals
     |> IO.inspect
+  end
+
+  def savings(file) do
+    read_csv(file)
+    |> group_by_year
+    |> calculate_income_and_expense
+    |> IO.inspect
+  end
+
+  defp calculate_income_and_expense(records) do
+    Enum.reduce(records, %{}, fn({k, v}, acc) ->
+      Map.put(acc, k, income_expense_savings(v)) end)
+  end
+
+  def income_expense_savings(record) do
+    income  = income_by_month(record)
+    expense = expense_by_month(record)
+    savings = Enum.reduce(income, %{}, fn({k, v}, acc) ->
+      Map.put(acc, k, income[k] - expense[k]) end)
+    %{income: income, expense: expense, savings: savings}
   end
 
   def annual_income_by_month(file) do
