@@ -44,6 +44,39 @@ defmodule BankTest do
     sums = Bank.calculate_totals(records)
     assert sums == %{income: 100, expense: 50, savings: 50}
   end
+
+  test "#group_by_year groups by year" do
+    records = [
+      %{"Af Bij" => "Bij", "Datum" => "20151231", year: 2015},
+      %{"Af Bij" => "Af", "Datum" => "20151230", year: 2015}
+    ]
+    by_year = Bank.group_by_year(records)
+    assert Map.keys(by_year) == [2015]
+  end
+
+  test "#group_by_month groups by month" do
+    records = [
+      %{"Af Bij" => "Bij", "Datum" => "20151231", month: 2},
+      %{"Af Bij" => "Af", "Datum" => "20151230", month: 2}
+    ]
+    by_month = Bank.group_by_month(records)
+    assert Map.keys(by_month) == [2]
+  end
+
+  test "group into year and then month" do
+    records = [
+      %{"Af Bij" => "Bij", "Datum" => "20151231", month: 12, year: 2015},
+      %{"Af Bij" => "Af", "Datum" => "20151230", month: 11, year: 2015}
+    ]
+
+    result = Bank.group_by_year_and_month(records)
+    assert result == %{2015 =>
+                        %{
+                          12 => [ List.first(records) ],
+                          11 => [ List.last(records) ]
+                        }
+                      }
+  end
   # test "#supermarkets counts expenses for supermarkets" do
   #   transactions_csv = "./test/fixtures/ing.csv"
   #   assert Bank.supermarkets(transactions_csv) == 55.00

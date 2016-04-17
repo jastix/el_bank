@@ -20,6 +20,19 @@ defmodule Bank do
     %{income: income, expense: expense, savings: savings}
   end
 
+  def group_by_year_and_month(records) do
+    records
+    |> group_by_year
+    |> Enum.reduce(%{}, fn({k, v}, acc) -> Map.put(acc, k, group_by_month(v)) end)
+  end
+  def group_by_year(records) do
+    Enum.group_by(records, fn(x) -> x[:year] end)
+  end
+
+  def group_by_month(records) do
+    Enum.group_by(records, fn(x) -> x[:month] end)
+  end
+
   def add_year(records) do
     records
     |> Stream.map(fn(x) -> Map.put(x, :year, extract_year(x)) end)
@@ -45,9 +58,11 @@ defmodule Bank do
 
   defp extract_year(record) do
     String.slice(record["Datum"], 0..3)
+    |> String.to_integer
   end
 
   defp extract_month(record) do
     String.slice(record["Datum"], 4..5)
+    |> String.to_integer
   end
 end
