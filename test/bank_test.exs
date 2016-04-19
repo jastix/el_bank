@@ -77,6 +77,26 @@ defmodule BankTest do
                         }
                       }
   end
+
+  test "calculate totals for each month" do
+    records = [
+      %{"Af Bij" => "Bij", "Datum" => "20151231", "Bedrag (EUR)" => "100,00", month: 12, year: 2015 },
+      %{"Af Bij" => "Af", "Datum" => "20151230", "Bedrag (EUR)" => "1000,00", month: 11, year: 2015 }
+    ]
+    result = Bank.group_by_year_and_month(records)
+    |> Enum.reduce( %{}, fn({k, v}, acc) ->
+         Map.put(acc, k, Enum.reduce(v, %{}, fn({k, v}, acc) ->
+           Map.put(acc, k, Bank.calculate_totals(v))
+         end)
+         )
+        end)
+    assert result == %{2015 =>
+                        %{
+                          11 => %{expense: 1000.00, income: 0, savings: -1000.00},
+                          12 => %{expense: 0, income: 100.00, savings: 100.00}
+                        }
+                      }
+  end
   # test "#supermarkets counts expenses for supermarkets" do
   #   transactions_csv = "./test/fixtures/ing.csv"
   #   assert Bank.supermarkets(transactions_csv) == 55.00
