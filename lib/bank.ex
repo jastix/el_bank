@@ -7,7 +7,31 @@ defmodule Bank do
     |> Stream.filter(fn(x) -> !same_account_transfer?(x) end )
   end
 
-  def calculate_totals(records) do
+  def compute_results(file) do
+    file
+    |> read_csv
+    |> add_month
+    |> add_year
+    |> group_by_year_and_month
+    |> calculate_annual_totals
+    |> format
+  end
+
+  def format(data) do
+    IO.puts "Banking report"
+    IO.inspect data
+  end
+
+  def calculate_annual_totals(records) do
+    records
+    |> Enum.reduce(%{}, fn({k, v}, acc) ->
+         Map.put(acc, k, Enum.reduce(v, %{}, fn({k, v}, acc) ->
+           Map.put(acc, k, Bank.calculate_monthly_totals(v))
+         end)
+         )
+       end)
+  end
+  def calculate_monthly_totals(records) do
     income = records
     |> Stream.filter(fn(x) -> is_income?(x) end)
     |> Enum.reduce(0, fn(x, acc) -> acc + convert_amount(x) end)
@@ -23,8 +47,10 @@ defmodule Bank do
   def group_by_year_and_month(records) do
     records
     |> group_by_year
-    |> Enum.reduce(%{}, fn({k, v}, acc) -> Map.put(acc, k, group_by_month(v)) end)
+    |> Enum.reduce(%{}, fn({k, v}, acc) ->
+         Map.put(acc, k, group_by_month(v)) end)
   end
+
   def group_by_year(records) do
     Enum.group_by(records, fn(x) -> x[:year] end)
   end

@@ -41,7 +41,7 @@ defmodule BankTest do
       %{"Af Bij" => "Bij", "Bedrag (EUR)" => "100,00"},
       %{"Af Bij" => "Af", "Bedrag (EUR)" => "50,00"}
     ]
-    sums = Bank.calculate_totals(records)
+    sums = Bank.calculate_monthly_totals(records)
     assert sums == %{income: 100, expense: 50, savings: 50}
   end
 
@@ -84,12 +84,8 @@ defmodule BankTest do
       %{"Af Bij" => "Af", "Datum" => "20151230", "Bedrag (EUR)" => "1000,00", month: 11, year: 2015 }
     ]
     result = Bank.group_by_year_and_month(records)
-    |> Enum.reduce( %{}, fn({k, v}, acc) ->
-         Map.put(acc, k, Enum.reduce(v, %{}, fn({k, v}, acc) ->
-           Map.put(acc, k, Bank.calculate_totals(v))
-         end)
-         )
-        end)
+    |> Bank.calculate_annual_totals
+
     assert result == %{2015 =>
                         %{
                           11 => %{expense: 1000.00, income: 0, savings: -1000.00},
