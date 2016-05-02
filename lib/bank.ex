@@ -19,7 +19,7 @@ defmodule Bank do
 
   def format(data) do
     IO.puts "Banking report"
-    IO.inspect data
+    :io.format("~40p~n", [data])
   end
 
   def calculate_annual_totals(records) do
